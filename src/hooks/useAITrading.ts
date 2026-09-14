@@ -254,7 +254,7 @@ export const useAITrading = () => {
   const getSimpleAISignal = useCallback(async () => {
     try {
       console.log('🔮 Getting Simple AI signal with real data...');
-      const response = await fetch('http://localhost:5001/api/simple/prediction');
+      const response = await fetch('/api/simple/prediction');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

@@ -3,7 +3,7 @@
  * Extracted from aiSystem.ts for better modularity
  */
 
-import * as tf from '@tensorflow/tfjs-node';
+import * as tf from '@tensorflow/tfjs';
 
 /**
  * LSTM Model Configuration

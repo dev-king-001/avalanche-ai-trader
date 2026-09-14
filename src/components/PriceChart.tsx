@@ -76,7 +76,7 @@ const PriceChart: React.FC = () => {
         console.log('🔄 Fetching real data from backend...');
         
         // Fetch AI prediction and current price
-        const response = await fetch('http://localhost:5001/api/simple/prediction', {
+        const response = await fetch('/api/simple/prediction', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

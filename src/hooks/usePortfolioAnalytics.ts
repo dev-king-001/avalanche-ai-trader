@@ -92,7 +92,7 @@ export const usePortfolioAnalytics = (): UsePortfolioAnalyticsReturn => {
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch('http://localhost:5001/api/portfolio/metrics');
+      const response = await fetch('/api/portfolio/metrics');
       const data = await response.json();
       
       if (data.success) {

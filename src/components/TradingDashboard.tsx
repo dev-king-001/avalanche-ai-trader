@@ -217,33 +217,31 @@ export const TradingDashboard: React.FC = () => {
     return <LoadingSkeleton />;
   }
 
-  if (analyticsError) {
-    return (
-      <Alert variant="destructive">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          Error loading dashboard data: {analyticsError}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="ml-2" 
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-            Retry
-          </Button>
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
   return (
     <div className="space-y-6">
+      {analyticsError && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>Error loading dashboard data: {analyticsError}</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="ml-2" 
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={cn("w-4 h-4 mr-2", isRefreshing && "animate-spin")} />
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
       {/* Enhanced Dashboard Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
+            <img src="/logo.jpg" alt="Avalanche AI Trader Logo" className="w-10 h-10 rounded-md shadow-sm object-cover" />
             <h1 className="text-2xl lg:text-3xl font-bold">AI Trading Dashboard</h1>
             <div className="flex items-center gap-2">
               <Badge variant={isInitialized ? 'default' : 'secondary'} className="hidden sm:flex">
