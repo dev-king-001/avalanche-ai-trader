@@ -238,4 +238,9 @@ async function initializeServer() {
   }
 }
 
-initializeServer();
+// Only start the server if not running in a serverless environment like Vercel
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  initializeServer();
+}
+
+export default app;
