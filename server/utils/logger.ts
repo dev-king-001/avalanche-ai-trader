@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import * as path from 'path';

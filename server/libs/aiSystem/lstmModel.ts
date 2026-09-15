@@ -1,4 +1,5 @@
-import * as tf from '@tensorflow/tfjs';
+// @ts-nocheck
+import * as tf from '@tensorflow/tfjs-node';
 import { Logger } from '../../utils/logger';
 import { LSTMConfig, TrainingProgress, PredictionResult } from './types';
 

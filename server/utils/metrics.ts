@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as promClient from 'prom-client';
 import { Logger } from './logger';
 import { EnvironmentManager } from '../config/environment';

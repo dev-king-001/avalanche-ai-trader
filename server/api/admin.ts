@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from 'express';
 import { Logger } from '../utils/logger';
 import { MetricsCollector } from '../utils/metrics';

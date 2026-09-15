@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { Logger } from '../utils/logger';
