@@ -1,9 +1,8 @@
-// @ts-nocheck
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import * as path from 'path';
 import * as fs from 'fs';
-import { EnvironmentManager } from '../config/environment';
+import { EnvironmentManager } from '../config/environment.js';
 
 interface LogMetadata {
   correlationId?: string;
@@ -22,13 +21,17 @@ interface LogMetadata {
   ai?: {
     modelType: string;
     confidence: number;
-    predictionType: string;
+    predictionType?: string;
+    eventType?: string;
+    timestamp?: string;
   };
   security?: {
     ip: string;
     userAgent: string;
     action: string;
   };
+  error?: any;
+  [key: string]: any;
 }
 
 export class Logger {
@@ -185,6 +188,19 @@ export class Logger {
 
     const message = `AI ${modelType} ${eventType} - Confidence: ${confidence}`;
     this.logger.info(this.formatMessage('info', message, aiMetadata));
+  }
+
+  public logDeploymentEvent(version: string, status: string, metadata?: LogMetadata): void { this.logger.info(`Deployment - ${version} ${status}`, { version, status, ...metadata }); } public getLogFiles(): string[] { return []; } public async getRecentLogs(lines: number, level?: string): Promise<any[]> { return []; } public logSystemHealth(component: string, status: string, metadata?: LogMetadata): void {
+    const healthMetadata = {
+      ...metadata,
+      system: {
+        component,
+        status,
+        timestamp: new Date().toISOString()
+      }
+    };
+    const message = `System Health: ${component} is ${status}`;
+    this.logger.info(this.formatMessage('info', message, healthMetadata));
   }
 
   public logPerformance(operation: string, duration: number, memoryUsage: number, metadata?: LogMetadata): void {
