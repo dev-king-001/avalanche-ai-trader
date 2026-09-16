@@ -1,11 +1,10 @@
-// @ts-nocheck
 import express from 'express';
-import { Logger } from '../utils/logger';
-import { MetricsCollector } from '../utils/metrics';
-import { ModelVersionManager } from '../libs/modelVersioning';
-import { CacheManager } from '../utils/cache';
-import { AISystem } from '../libs/aiSystem';
-import { EnvironmentManager } from '../config/environment';
+import { Logger } from '../utils/logger.js';
+import { MetricsCollector } from '../utils/metrics.js';
+import { ModelVersionManager } from '../libs/modelVersioning.js';
+import { CacheManager } from '../utils/cache.js';
+import { AISystem } from '../libs/aiSystem/index.js';
+import { EnvironmentManager } from '../config/environment.js';
 
 const router = express.Router();
 const logger = Logger.getInstance();
@@ -191,9 +190,9 @@ router.post('/models/deploy', async (req, res) => {
     
     const deployedModel = await modelManager.deployModel(modelData, version, modelType, metadata);
     
-    logger.logDeploymentEvent(version, 'deploy', true, {
+    logger.logDeploymentEvent(version, 'deploy', {
       modelType,
-      performance: deployedModel.performance
+      performance: deployedModel.performance as any
     });
     
     res.json({

@@ -1,7 +1,6 @@
-// @ts-nocheck
 import * as promClient from 'prom-client';
-import { Logger } from './logger';
-import { EnvironmentManager } from '../config/environment';
+import { Logger } from './logger.js';
+import { EnvironmentManager } from '../config/environment.js';
 
 interface MetricsData {
   apiRequests: {
@@ -43,17 +42,17 @@ export class MetricsCollector {
   private prometheusMetrics: any;
 
   // Prometheus metrics
-  private httpRequestDuration: promClient.Histogram;
-  private httpRequestTotal: promClient.Counter;
-  private aiPredictionDuration: promClient.Histogram;
-  private aiPredictionAccuracy: promClient.Gauge;
-  private aiModelMemoryUsage: promClient.Gauge;
-  private tradingVolume: promClient.Counter;
-  private tradingSuccessRate: promClient.Gauge;
-  private systemMemoryUsage: promClient.Gauge;
-  private systemCpuUsage: promClient.Gauge;
-  private cacheHitRate: promClient.Gauge;
-  private errorRate: promClient.Counter;
+  private httpRequestDuration!: promClient.Histogram;
+  private httpRequestTotal!: promClient.Counter;
+  private aiPredictionDuration!: promClient.Histogram;
+  private aiPredictionAccuracy!: promClient.Gauge;
+  private aiModelMemoryUsage!: promClient.Gauge;
+  private tradingVolume!: promClient.Counter;
+  private tradingSuccessRate!: promClient.Gauge;
+  private systemMemoryUsage!: promClient.Gauge;
+  private systemCpuUsage!: promClient.Gauge;
+  private cacheHitRate!: promClient.Gauge;
+  private errorRate!: promClient.Counter;
 
   private constructor() {
     this.logger = Logger.getInstance();
@@ -332,8 +331,8 @@ export class MetricsCollector {
     };
   }
 
-  public getPrometheusMetrics(): string {
-    return promClient.register.metrics();
+  public async getPrometheusMetrics(): Promise<string> {
+    return await promClient.register.metrics();
   }
 
   public getHealthStatus(): any {

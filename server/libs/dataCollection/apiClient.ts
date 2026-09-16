@@ -1,9 +1,8 @@
-// @ts-nocheck
 import axios from 'axios';
-import { Logger } from '../../utils/logger';
-import { CacheManager } from '../../utils/cache';
-import { EnvironmentManager } from '../../config/environment';
-import { RateLimitConfig, RateLimitTracker, APIConfig } from './types';
+import { Logger } from '../../utils/logger.js';
+import { CacheManager } from '../../utils/cache.js';
+import { EnvironmentManager } from '../../config/environment.js';
+import { RateLimitConfig, RateLimitTracker, APIConfig } from './types.js';
 
 /**
  * API Client for external data sources

@@ -1,5 +1,5 @@
 import WebSocket, { RawData } from 'ws';
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from 'events';
 import { createClient } from 'graphql-ws';
 import { 
   StreamingEvent, 
@@ -13,8 +13,8 @@ import {
   StreamingStatus,
   StreamingConfig,
   ValidationResult
-} from '../../src/utils/streamingTypes';
-import type { MarketDataPoint } from '../../src/shared/types';
+} from '../../src/utils/streamingTypes.js';
+import type { MarketDataPoint } from '../../src/shared/types.js';
 
 /**
  * Server-side streaming manager for real-time market data
@@ -168,7 +168,7 @@ export class StreamingServer {
           variables: { pair: pairId }
         },
         {
-          next: (msg) => {
+          next: (msg: any) => {
             if (msg.data?.swaps?.[0]) {
               this.handleSubgraphUpdate({ type: 'data', data: { swaps: [msg.data.swaps[0]] } });
             }
@@ -423,8 +423,10 @@ export class StreamingServer {
         const startTime = now - lookbackSeconds;
         
         // Import fetchPangolinSwaps dynamically to avoid circular dependencies
-        const { fetchPangolinSwaps } = await import('./dataCollection');
-        const swaps = await fetchPangolinSwaps(startTime, now, 10); // Limit to 10 recent swaps
+        const { fetchPangolinSwaps } = await import('./dataCollection/index.js');
+        // fetchPangolinSwaps takes (tokenAddress, hours)
+        const hours = (now - startTime) / 3600;
+        const swaps = await fetchPangolinSwaps('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', hours);
         
         if (swaps.length > 0) {
           // Emit swap events for new swaps
@@ -437,7 +439,7 @@ export class StreamingServer {
             };
             
             this.eventEmitter.emit(StreamingEventType.SWAP_EVENT, swapEvent);
-            console.log(`🔄 Polling fallback: fetched swap $${parseFloat(swap.amountUSD).toFixed(2)}`);
+            console.log(`🔄 Polling fallback: fetched swap $${swap.price}`);
           });
           
           // Reset error count on successful polling

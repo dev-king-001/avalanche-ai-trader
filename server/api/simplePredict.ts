@@ -3,8 +3,8 @@
  */
 
 import express from 'express';
-import { SimpleAISystem } from '../libs/simpleAI';
-import { collectHistoricalData } from '../libs/dataCollection';
+import { SimpleAISystem } from '../libs/simpleAI.js';
+import { collectHistoricalData } from '../libs/dataCollection/index.js';
 
 export const simplePredictRouter = express.Router();
 

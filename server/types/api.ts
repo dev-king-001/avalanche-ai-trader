@@ -1,4 +1,4 @@
-import type { ProcessedFeatures, MarketData } from '../../src/utils/aiModels';
+import type { ProcessedFeatures, MarketData } from '../../src/utils/aiModels.js';
 
 /**
  * API Request and Response Types

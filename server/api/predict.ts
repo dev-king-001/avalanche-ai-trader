@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { AISystem } from '../libs/aiSystem';
-import { PredictRequest, PredictResponse } from '../types/api';
+import { AISystem } from '../libs/aiSystem/index.js';
+import { PredictRequest, PredictResponse } from '../types/api.js';
 
 const router = Router();
 

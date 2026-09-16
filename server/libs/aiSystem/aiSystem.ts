@@ -1,10 +1,13 @@
-import { Logger } from '../../utils/logger';
-import { CacheManager } from '../../utils/cache';
-import { EnvironmentManager } from '../../config/environment';
-import { collectMarketData } from '../dataCollection';
-import { ServerLSTMPredictor } from './lstmModel';
-import { QLearningAgent } from './qLearningAgent';
-import { PredictionResult, ModelState } from './types';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Logger } from '../../utils/logger.js';
+import { CacheManager } from '../../utils/cache.js';
+import { EnvironmentManager } from '../../config/environment.js';
+import { collectMarketData } from '../dataCollection/index.js';
+import { Web3Server } from '../web3Server.js';
+import { ServerLSTMPredictor } from './lstmModel.js';
+import { QLearningAgent } from './qLearningAgent.js';
+import { PredictionResult, ModelState } from './types.js';
 
 /**
  * Main AI System Implementation
@@ -19,6 +22,7 @@ export class AISystem {
   private lastTrainingTime: number = 0;
   private totalPredictions: number = 0;
   private averageAccuracy: number = 0;
+  private oraclePublishInterval: NodeJS.Timeout | null = null;
   private modelVersion: string = '1.0.0';
   
   private logger = Logger.getInstance();
@@ -440,5 +444,44 @@ export class AISystem {
         }
       });
     }
+  }
+
+  /**
+   * Start publishing predictions to the PriceOracle smart contract
+   */
+  startOraclePublisher(intervalMs: number = 300000): void { // Default 5 minutes
+    if (this.oraclePublishInterval) {
+      clearInterval(this.oraclePublishInterval);
+    }
+    
+    this.logger.info(`Starting Oracle Publisher, interval: ${intervalMs}ms`);
+    
+    this.oraclePublishInterval = setInterval(async () => {
+      if (!this.isInitialized) return;
+      
+      try {
+        // Collect brief market data to predict
+        const marketData = await collectMarketData(['pangolin', 'coingecko'], { hours: 1 });
+        if (!marketData || marketData.length === 0) return;
+        
+        const prices = marketData.map(d => d.price);
+        const prediction = await this.predict(prices);
+        
+        // Expiry in 1 hour
+        const expiresAt = Math.floor(Date.now() / 1000) + 3600;
+        
+        const web3Server = Web3Server.getInstance();
+        await web3Server.publishPrediction(prediction.price, prediction.confidence, expiresAt);
+        
+        this.logger.info(`Oracle Publisher: Published prediction. Price=${prediction.price.toFixed(4)}, Conf=${(prediction.confidence * 100).toFixed(1)}%`);
+      } catch (error) {
+        this.logger.error('Oracle Publisher encountered an error', error as Error);
+      }
+    }, intervalMs);
+    
+    // Also try to publish immediately
+    setTimeout(() => {
+      this.predict([100]).catch(() => {}); // Warmup
+    }, 1000);
   }
 }

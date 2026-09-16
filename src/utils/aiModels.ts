@@ -4,7 +4,7 @@ import {
   calculateSMA, 
   calculateEMA, 
   calculateVolatility 
-} from './dataPreprocessing';
+} from './dataPreprocessing.js';
 
 /**
  * AI Models for Token Price Prediction and Trading

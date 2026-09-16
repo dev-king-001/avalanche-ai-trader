@@ -4,5 +4,5 @@
  * for backward compatibility while maintaining the new modular structure
  */
 
-export * from './dataCollection/index';
+export * from './dataCollection/index.js';
 

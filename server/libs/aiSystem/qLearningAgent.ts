@@ -1,5 +1,5 @@
-import { Logger } from '../../utils/logger';
-import { QLearningConfig, PredictionResult } from './types';
+import { Logger } from '../../utils/logger.js';
+import { QLearningConfig, PredictionResult } from './types.js';
 
 /**
  * Q-Learning Agent Implementation

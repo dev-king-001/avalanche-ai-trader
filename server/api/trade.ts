@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { AISystem } from '../libs/aiSystem';
-import { TradeRequest, TradeResponse } from '../types/api';
+import { AISystem } from '../libs/aiSystem/index.js';
+import { TradeRequest, TradeResponse } from '../types/api.js';
 
 const router = Router();
 

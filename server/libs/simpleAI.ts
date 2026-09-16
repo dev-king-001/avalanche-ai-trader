@@ -3,9 +3,9 @@
  * Provides basic predictions using statistical methods on real market data
  */
 
-import { MarketDataPoint } from './dataCollection';
-import { collectHistoricalData, preprocessData } from './dataCollection';
-import { Logger } from '../utils/logger';
+import { MarketDataPoint } from './dataCollection/index.js';
+import { collectHistoricalData, preprocessData } from './dataCollection/index.js';
+import { Logger } from '../utils/logger.js';
 
 export interface SimplePrediction {
   price: number;

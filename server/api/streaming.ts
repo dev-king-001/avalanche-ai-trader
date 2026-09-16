@@ -1,6 +1,6 @@
 import express from 'express';
-import { getStreamingServerInstance } from '../libs/dataCollection';
-import { AISystem } from '../libs/aiSystem';
+import { getStreamingServerInstance } from '../libs/dataCollection/index.js';
+import { AISystem } from '../libs/aiSystem/index.js';
 
 const router = express.Router();
 

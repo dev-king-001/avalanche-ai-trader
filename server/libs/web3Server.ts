@@ -1,11 +1,11 @@
-// @ts-nocheck
-import Web3 from 'web3';
-import { AbiItem } from 'web3-utils';
-import { Logger } from '../utils/logger';
-import { CacheManager } from '../utils/cache';
-import { EnvironmentManager } from '../config/environment';
-import AIPoweredTraderABI from '../../src/utils/abis/AIPoweredTrader.json';
-import PriceOracleABI from '../../src/utils/abis/PriceOracle.json';
+import { Web3 } from 'web3';
+import { Logger } from '../utils/logger.js';
+import { CacheManager } from '../utils/cache.js';
+import { EnvironmentManager } from '../config/environment.js';
+import fs from 'fs';
+
+const AIPoweredTraderABI = JSON.parse(fs.readFileSync(new URL('../../src/utils/abis/AIPoweredTrader.json', import.meta.url), 'utf-8'));
+const PriceOracleABI = JSON.parse(fs.readFileSync(new URL('../../src/utils/abis/PriceOracle.json', import.meta.url), 'utf-8'));
 
 /**
  * Enhanced Web3 Server for blockchain integration
@@ -43,7 +43,7 @@ export class Web3Server {
   async initialize(): Promise<void> {
     try {
       const rpcUrl = this.envManager.getConfig('blockchain').rpcUrl;
-      this.web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl));
+      this.web3 = new Web3(rpcUrl);
       
       // Test connection
       await this.web3.eth.getBlockNumber();
@@ -52,6 +52,17 @@ export class Web3Server {
       // Initialize contracts
       await this.initializeContracts();
       
+      // Initialize admin wallet
+      const privateKey = process.env.PRIVATE_KEY;
+      if (privateKey) {
+        const account = this.web3.eth.accounts.privateKeyToAccount(privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`);
+        this.web3.eth.accounts.wallet.add(account);
+        this.web3.eth.defaultAccount = account.address;
+        this.logger.info(`Admin wallet initialized: ${account.address}`);
+      } else {
+        this.logger.warn('No PRIVATE_KEY provided; backend will not be able to send transactions');
+      }
+
       this.logger.info('Web3 server initialized successfully');
     } catch (error) {
       this.logger.error('Failed to initialize Web3 server', error as Error);
@@ -68,12 +79,12 @@ export class Web3Server {
       const priceOracleAddress = this.envManager.getConfig('blockchain').priceOracleAddress;
 
       this.aiTraderContract = new this.web3.eth.Contract(
-        AIPoweredTraderABI.abi as AbiItem[],
+        AIPoweredTraderABI.abi,
         aiTraderAddress
       );
 
       this.priceOracleContract = new this.web3.eth.Contract(
-        PriceOracleABI.abi as AbiItem[],
+        PriceOracleABI.abi,
         priceOracleAddress
       );
 
@@ -479,5 +490,38 @@ export class Web3Server {
    */
   getPriceOracleContract(): any {
     return this.priceOracleContract;
+  }
+
+  /**
+   * Publish AI prediction to PriceOracle
+   */
+  async publishPrediction(price: number, confidence: number, expiresAt: number): Promise<string> {
+    try {
+      const privateKey = process.env.PRIVATE_KEY;
+      if (!privateKey) throw new Error("PRIVATE_KEY not set in environment");
+
+      const account = this.web3.eth.accounts.privateKeyToAccount(privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`);
+      
+      // Convert to Wei and correct basis (0-100 for confidence as expected by PriceOracle)
+      const priceWei = this.web3.utils.toWei(price.toFixed(6).toString(), 'ether');
+      const confidenceVal = Math.floor(confidence * 100);
+
+      const gasPrice = await this.getOptimizedGasPrice();
+      
+      const tx = this.priceOracleContract.methods.setPrediction(priceWei, confidenceVal, expiresAt);
+      const gas = await tx.estimateGas({ from: account.address });
+
+      const receipt = await tx.send({
+        from: account.address,
+        gas: Math.floor(Number(gas) * 1.2).toString(),
+        gasPrice
+      });
+
+      this.logger.info(`Successfully published AI prediction to PriceOracle`, { txHash: receipt.transactionHash });
+      return receipt.transactionHash as string;
+    } catch (error) {
+      this.logger.error('Failed to publish prediction to Oracle', error as Error);
+      throw error;
+    }
   }
 }

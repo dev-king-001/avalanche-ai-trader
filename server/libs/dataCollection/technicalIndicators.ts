@@ -1,4 +1,4 @@
-import { MarketDataPoint } from './types';
+import { MarketDataPoint } from './types.js';
 
 /**
  * Technical Indicators Module

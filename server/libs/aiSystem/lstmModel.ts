@@ -1,7 +1,6 @@
-// @ts-nocheck
 import * as tf from '@tensorflow/tfjs';
-import { Logger } from '../../utils/logger';
-import { LSTMConfig, TrainingProgress, PredictionResult } from './types';
+import { Logger } from '../../utils/logger.js';
+import { LSTMConfig, TrainingProgress, PredictionResult } from './types.js';
 
 /**
  * LSTM Model Implementation
@@ -133,9 +132,11 @@ export class ServerLSTMPredictor {
 
       // Normalize features and reshape for LSTM
       const XNormalized: number[][][] = [];
+      let lastScaler: any = null;
       for (let i = 0; i < X.length; i++) {
         const sequence = X[i];
-        const { normalized } = this.normalizeFeatures(sequence);
+        const { normalized, scaler } = this.normalizeFeatures(sequence);
+        lastScaler = scaler;
         // Reshape to 3D array: [batch, sequence_length, features]
         const reshapedSequence = normalized.map(val => [val]);
         XNormalized.push(reshapedSequence);
@@ -147,7 +148,7 @@ export class ServerLSTMPredictor {
 
       // Create and train model
       this.model = this.createModel([this.modelConfig.sequenceLength, 1]);
-      this.scaler = scaler;
+      this.scaler = lastScaler;
 
       // Training callbacks
       const callbacks = [

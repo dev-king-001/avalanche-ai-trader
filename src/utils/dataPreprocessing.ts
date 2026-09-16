@@ -4,7 +4,7 @@
  * Consolidates all preprocessing logic from various modules
  */
 
-import { MarketData, ProcessedFeatures, MarketDataPoint } from '@/shared/types';
+import { MarketData, MarketDataPoint } from '../shared/types.js';
 
 // ============================================================================
 // TECHNICAL INDICATORS CALCULATION
@@ -282,7 +282,7 @@ export const validateMarketData = (data: any[]): { isValid: boolean; errors: str
  * @param data - Raw market data array
  * @returns Processed features array
  */
-export const processMarketData = (data: MarketData[]): ProcessedFeatures[] => {
+export const processMarketData = (data: MarketData[]): any[] => {
   const prices = data.map(d => d.close);
   const volumes = data.map(d => d.volume);
   
@@ -446,7 +446,7 @@ export const preprocessData = (rawData: MarketDataPoint[]): MarketDataPoint[] =>
  * @param rawData - Raw market data
  * @returns Processed features ready for ML models
  */
-export const prepareDataForTraining = (rawData: MarketData[]): ProcessedFeatures[] => {
+export const prepareDataForTraining = (rawData: MarketData[]): MarketData[] => {
   // Convert MarketData to MarketDataPoint format for preprocessing
   const dataPoints: MarketDataPoint[] = rawData.map(d => ({
     timestamp: d.timestamp,
@@ -455,7 +455,9 @@ export const prepareDataForTraining = (rawData: MarketData[]): ProcessedFeatures
     high: d.high,
     low: d.low,
     open: d.open,
-    close: d.close
+    close: d.close,
+    transactionCount: 0,
+    liquidity: 0
   }));
 
   // Preprocess the data
@@ -463,13 +465,15 @@ export const prepareDataForTraining = (rawData: MarketData[]): ProcessedFeatures
 
   // Convert back to MarketData format
   const marketData: MarketData[] = preprocessedData.map(d => ({
+    symbol: 'UNKNOWN',
     timestamp: d.timestamp,
-    price: d.price,
-    volume: d.volume,
+    open: d.open,
     high: d.high,
     low: d.low,
-    open: d.open,
-    close: d.close
+    close: d.price,
+    volume: d.volume,
+    priceChange: 0,
+    priceChangePercent: 0
   }));
 
   // Process into features
@@ -513,7 +517,9 @@ export const generateMockData = (
       high,
       low,
       open,
-      close
+      close,
+      transactionCount: 0,
+      liquidity: 0
     });
   }
   

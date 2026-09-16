@@ -1,8 +1,8 @@
 import { createClient, RedisClientType } from 'redis';
 import * as crypto from 'crypto';
-import { Logger } from './logger';
-import { MetricsCollector } from './metrics';
-import { EnvironmentManager } from '../config/environment';
+import { Logger } from './logger.js';
+import { MetricsCollector } from './metrics.js';
+import { EnvironmentManager } from '../config/environment.js';
 
 interface CacheOptions {
   ttl?: number;
@@ -75,7 +75,7 @@ export class CacheManager {
       this.isConnected = false;
     });
 
-    return client;
+    return client as unknown as RedisClientType;
   }
 
   public async connect(): Promise<void> {

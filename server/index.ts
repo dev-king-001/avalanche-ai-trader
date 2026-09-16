@@ -196,6 +196,9 @@ async function initializeServer() {
       aiSystem.startPerformanceMonitoring();
       aiSystem.startMemoryCleanup();
       
+      // Start publishing predictions to the blockchain oracle
+      aiSystem.startOraclePublisher();
+      
       // Enable streaming if configured
       if (envManager.getEnableStreaming()) {
         try {

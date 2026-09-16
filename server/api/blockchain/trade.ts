@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { Web3Server } from '../../libs/web3Server';
-import { BlockchainTradeRequest, BlockchainTradeResponse } from '../../types/api';
+import { Web3Server } from '../../libs/web3Server.js';
+import { BlockchainTradeRequest, BlockchainTradeResponse } from '../../types/api.js';
 
 const router = Router();
 

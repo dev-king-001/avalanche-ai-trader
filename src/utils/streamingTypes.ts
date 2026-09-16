@@ -1,5 +1,5 @@
 // Re-export StreamingEventType from shared types
-export { StreamingEventType } from '../shared/types';
+export { StreamingEventType } from '../shared/types.js';
 
 // Import shared types for re-export
 export type { 
@@ -13,7 +13,7 @@ export type {
   ConnectionState,
   ValidationResult,
   StreamHealth
-} from '../shared/types';
+} from '../shared/types.js';
 
 // Define specific streaming data interfaces
 export interface PriceStreamData {

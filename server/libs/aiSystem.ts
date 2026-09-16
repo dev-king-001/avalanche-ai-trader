@@ -4,4 +4,4 @@
  * for backward compatibility while maintaining the new modular structure
  */
 
-export * from './aiSystem/index';
+export * from './aiSystem/index.js';

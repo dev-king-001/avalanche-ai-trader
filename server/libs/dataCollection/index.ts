@@ -4,7 +4,7 @@
  */
 
 // Export types
-export * from './types';
+export * from './types.js';
 
 // Export API client functionality
 export { 
@@ -15,13 +15,13 @@ export {
   COINGECKO_API_URL, 
   SNOWTRACE_API_URL, 
   SNOWTRACE_API_KEY 
-} from './apiClient';
+} from './apiClient.js';
 
 // Export technical indicators
 export { 
   interpolateMissingData, 
   addTechnicalIndicators 
-} from './technicalIndicators';
+} from './technicalIndicators.js';
 
 // Export main data collection functions
 export { 
@@ -30,11 +30,11 @@ export {
   fetchSnowtraceData, 
   preprocessData,
   collectMarketData 
-} from './dataCollection';
+} from './dataCollection.js';
 
 // Legacy exports for backward compatibility
 export const collectHistoricalData = async (...args: any[]) => {
-  const { collectMarketData } = await import('./dataCollection');
+  const { collectMarketData } = await import('./dataCollection.js');
   return collectMarketData(...args);
 };
 export const getStreamingServerInstance = () => null; // Placeholder

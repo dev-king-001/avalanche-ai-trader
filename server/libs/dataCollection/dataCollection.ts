@@ -1,10 +1,10 @@
-import { Logger } from '../../utils/logger';
-import { CacheManager } from '../../utils/cache';
-import { EnvironmentManager } from '../../config/environment';
+import { Logger } from '../../utils/logger.js';
+import { CacheManager } from '../../utils/cache.js';
+import { EnvironmentManager } from '../../config/environment.js';
 import { 
   MarketDataPoint, 
   SwapData 
-} from './types';
+} from './types.js';
 import { 
   makeAPIRequest, 
   validateMarketData, 
@@ -13,11 +13,11 @@ import {
   COINGECKO_API_URL, 
   SNOWTRACE_API_URL, 
   SNOWTRACE_API_KEY 
-} from './apiClient';
+} from './apiClient.js';
 import { 
   interpolateMissingData, 
   addTechnicalIndicators 
-} from './technicalIndicators';
+} from './technicalIndicators.js';
 
 /**
  * Main Data Collection Functions
@@ -83,7 +83,11 @@ export async function fetchPangolinSwaps(
             pair: {
               token0: { symbol: 'AVAX', decimals: '18' },
               token1: { symbol: 'USDC', decimals: '6' }
-            }
+            },
+            amount0In: "0",
+            amount1Out: "0",
+            amount0Out: "0",
+            amount1In: "0"
           });
         }
       });

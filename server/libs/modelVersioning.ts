@@ -1,9 +1,9 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import { Logger } from '../utils/logger';
-import { MetricsCollector } from '../utils/metrics';
-import { EnvironmentManager } from '../config/environment';
+import { Logger } from '../utils/logger.js';
+import { MetricsCollector } from '../utils/metrics.js';
+import { EnvironmentManager } from '../config/environment.js';
 
 interface ModelMetadata {
   version: string;
@@ -151,9 +151,9 @@ export class ModelVersionManager {
       this.models.set(version, modelMetadata);
 
       // Log deployment
-      this.logger.logDeploymentEvent(version, 'deploy', true, {
+      this.logger.logDeploymentEvent(version, 'deploy', {
         modelType,
-        performance: modelMetadata.performance
+        performance: modelMetadata.performance as any
       });
 
       this.logger.info(`Model ${version} deployed successfully`, {
@@ -163,7 +163,7 @@ export class ModelVersionManager {
 
       return modelMetadata;
     } catch (error) {
-      this.logger.logDeploymentEvent(version, 'deploy', false, {
+      this.logger.logDeploymentEvent(version, 'deploy', {
         modelType,
         error: (error as Error).message
       });
@@ -342,7 +342,7 @@ export class ModelVersionManager {
       model.trafficSplit = 100;
       await this.saveModelMetadata(version, model);
 
-      this.logger.logDeploymentEvent(version, 'promote', true, {
+      this.logger.logDeploymentEvent(version, 'promote', {
         modelType: model.modelType
       });
 
@@ -374,7 +374,7 @@ export class ModelVersionManager {
       previousModel.trafficSplit = 100;
       await this.saveModelMetadata(previousVersion, previousModel);
 
-      this.logger.logDeploymentEvent(previousVersion, 'rollback', true, {
+      this.logger.logDeploymentEvent(previousVersion, 'rollback', {
         modelType: previousModel.modelType,
         fromVersion: currentActive.version
       });
