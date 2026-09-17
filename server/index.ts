@@ -5,21 +5,23 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
-import { predictRouter } from './api/predict';
-import { tradeRouter } from './api/trade';
-import { blockchainRouter } from './api/blockchain/trade';
-import { streamingRouter } from './api/streaming';
-import { adminRouter } from './api/admin';
-import { simplePredictRouter } from './api/simplePredict';
-import { portfolioRouter } from './api/portfolio';
-import { AISystem } from './libs/aiSystem';
-import { Logger } from './utils/logger';
-import { MetricsCollector } from './utils/metrics';
-import { CacheManager } from './utils/cache';
-import { EnvironmentManager } from './config/environment';
+import { predictRouter } from './api/predict.js';
+import { tradeRouter } from './api/trade.js';
+import { blockchainRouter } from './api/blockchain/trade.js';
+import { streamingRouter } from './api/streaming.js';
+import { adminRouter } from './api/admin.js';
+import { simplePredictRouter } from './api/simplePredict.js';
+import { portfolioRouter } from './api/portfolio.js';
+import { AISystem } from './libs/aiSystem/index.js';
+import { Logger } from './utils/logger.js';
+import { MetricsCollector } from './utils/metrics.js';
+import { CacheManager } from './utils/cache.js';
+import { EnvironmentManager } from './config/environment.js';
 
 const app = express();
-const PORT = process.env.BACKEND_PORT || 5001;
+const PORT = Number(
+  process.env.PORT || process.env.BACKEND_PORT || 5001
+);
 
 // Initialize production components
 const logger = Logger.getInstance();
@@ -59,11 +61,36 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS middleware - more permissive for development
+const allowedOrigins = [
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+  'http://localhost:3000',
+  ...(process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL
+        .split(',')
+        .map(origin => origin.trim())
+        .filter(Boolean)
+    : [])
+];
+
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:3000'],
+  origin: (origin, callback) => {
+    // Allow requests with no Origin header, such as health checks/server-to-server requests.
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-correlation-id']
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'x-correlation-id'
+  ]
 }));
 
 // Body parsing middleware
@@ -180,7 +207,7 @@ async function initializeServer() {
     }
     
     // Start server first for immediate responsiveness
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       logger.info(`🎯 Backend server running on port ${PORT}`);
       logger.info(`📊 Health check: http://localhost:${PORT}/health`);
       logger.info(`🤖 AI endpoints available at http://localhost:${PORT}/api`);

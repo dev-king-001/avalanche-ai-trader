@@ -2,15 +2,14 @@ import { Web3 } from 'web3';
 import { Logger } from '../utils/logger.js';
 import { CacheManager } from '../utils/cache.js';
 import { EnvironmentManager } from '../config/environment.js';
-import fs from 'fs';
-
-const AIPoweredTraderABI = JSON.parse(fs.readFileSync(new URL('../../src/utils/abis/AIPoweredTrader.json', import.meta.url), 'utf-8'));
-const PriceOracleABI = JSON.parse(fs.readFileSync(new URL('../../src/utils/abis/PriceOracle.json', import.meta.url), 'utf-8'));
+import AIPoweredTraderABI from '../../src/utils/abis/AIPoweredTrader.json' with { type: 'json' };
+import PriceOracleABI from '../../src/utils/abis/PriceOracle.json' with { type: 'json' };
 
 /**
  * Enhanced Web3 Server for blockchain integration
  * Phase 3: Blockchain Layer Enhancement
  */
+
 export class Web3Server {
   private static instance: Web3Server;
   private web3: Web3;

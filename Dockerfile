@@ -1,13 +1,13 @@
 # Multi-stage Dockerfile for AI Trading Backend
-FROM node:18-alpine AS base
+FROM node:20-bookworm-slim AS base
 
 # Install dependencies for native modules
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
     g++ \
     git \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -29,11 +29,11 @@ COPY . .
 RUN pnpm run build:server
 
 # Production stage
-FROM node:18-alpine AS production
+FROM node:20-bookworm-slim AS production
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+RUN groupadd -g 1001 nodejs && \
+    useradd -m -s /bin/bash -u 1001 -g nodejs nodejs
 
 # Install production dependencies only
 WORKDIR /app

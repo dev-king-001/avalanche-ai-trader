@@ -18,14 +18,14 @@ async function main() {
     return;
   }
   
-  const provider = new ethers.JsonRpcProvider(RPC_URL);
+  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
   const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
   const oracleContract = new ethers.Contract(PRICE_ORACLE_ADDRESS!, PriceOracleABI, wallet);
 
   console.log("Wallet address:", wallet.address);
   console.log("Oracle address:", PRICE_ORACLE_ADDRESS);
 
-  const price = ethers.parseUnits("35.50", 18);
+  const price = ethers.utils.parseUnits("35.50", 18);
   const confidence = 85;
   const expiresAt = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
   const metadata = JSON.stringify({ source: "AI_System_Test" });
