@@ -44,8 +44,7 @@ COPY pnpm-lock.yaml ./
 
 # Install only production dependencies
 RUN npm install -g pnpm && \
-    pnpm install --frozen-lockfile --prod && \
-    pnpm cache clean
+    pnpm install --frozen-lockfile --prod
 
 # Copy built application
 COPY --from=build --chown=nodejs:nodejs /app/dist ./dist
